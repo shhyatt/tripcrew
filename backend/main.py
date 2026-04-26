@@ -144,33 +144,93 @@ def get_trips():
 
 # get one trip 
 
+# @app.get("/trips/{trip_id}")
+# def get_trip(trip_id: int):
+#     conn = get_connection()
+#     cur = conn.cursor()
+
+#     cur.execute("""
+#         SELECT 
+#             trips.id,
+#             trips.trip_name,
+#             trips.description,
+#             trips.start_date,
+#             trips.end_date,
+#             users.first_name || ' ' || users.last_name AS owner_name
+#         FROM trips
+#         JOIN users ON trips.owner_user_id = users.id
+#         WHERE trips.id = %s;
+#     """, (trip_id,))
+
+#     trip = cur.fetchone()
+
+#     cur.close()
+#     conn.close()
+
+#     if not trip:
+#         raise HTTPException(status_code=404, detail="Trip not found")
+
+#     return trip
+
 @app.get("/trips/{trip_id}")
-def get_trip(trip_id: int):
+def get_trip_details(trip_id: int):
     conn = get_connection()
     cur = conn.cursor()
 
+    # 1. Trip
     cur.execute("""
-        SELECT 
-            trips.id,
-            trips.trip_name,
-            trips.description,
-            trips.start_date,
-            trips.end_date,
-            users.first_name || ' ' || users.last_name AS owner_name
-        FROM trips
-        JOIN users ON trips.owner_user_id = users.id
-        WHERE trips.id = %s;
+        SELECT * FROM trips WHERE id = %s;
     """, (trip_id,))
-
     trip = cur.fetchone()
-
-    cur.close()
-    conn.close()
 
     if not trip:
         raise HTTPException(status_code=404, detail="Trip not found")
 
-    return trip
+    # 2. Members
+    cur.execute("""
+        SELECT u.*
+        FROM trip_members tm
+        JOIN users u ON tm.user_id = u.id
+        WHERE tm.trip_id = %s;
+    """, (trip_id,))
+    members = cur.fetchall()
+
+    # 3. Destinations
+    cur.execute("""
+        SELECT *
+        FROM trip_destinations
+        WHERE trip_id = %s
+        ORDER BY start_date;
+    """, (trip_id,))
+    destinations = cur.fetchall()
+
+    # 4. Itinerary Items
+    cur.execute("""
+        SELECT *
+        FROM itinerary_items
+        WHERE trip_id = %s
+        ORDER BY date, start_time
+    """, (trip_id,))
+    itinerary_items = cur.fetchall()
+
+    # 5. Checklists
+    cur.execute("""
+        SELECT *
+        FROM trip_checklist_items
+        WHERE trip_id = %s;
+    """, (trip_id,))
+    checklists = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return {
+        "trip": trip,
+        "members": members,
+        "destinations": destinations,
+        "itinerary_items": itinerary_items,
+        "checklists": checklists
+    }
 
 #get trip members
 
