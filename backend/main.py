@@ -88,6 +88,34 @@ def get_users():
 
     return users
 
+# Get one user
+
+@app.get("/users/{user_id}")
+def get_user(user_id: int):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT 
+            id,
+            first_name,
+            last_name,
+            email,
+            created_at
+        FROM users
+        WHERE id = %s;
+    """, (user_id,))
+
+    user = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return user
+
 # GET all trips
 @app.get("/trips")
 def get_trips():
@@ -172,6 +200,29 @@ def get_trip_members(trip_id: int):
 
     return members
 
+#Get one trip member
+
+@app.get("/checklist-items/{item_id}")
+def get_checklist_item(item_id: int):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM trip_checklist_items
+        WHERE id = %s;
+    """, (item_id,))
+
+    item = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    if not item:
+        raise HTTPException(status_code=404, detail="Checklist item not found")
+
+    return item
+
 #get itinerarys
 
 @app.get("/trips/{trip_id}/itinerary")
@@ -192,6 +243,29 @@ def get_trip_itinerary(trip_id: int):
     conn.close()
 
     return itinerary
+
+# Get one itinerary item 
+
+@app.get("/itinerary-items/{item_id}")
+def get_itinerary_item(item_id: int):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM itinerary_items
+        WHERE id = %s;
+    """, (item_id,))
+
+    item = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    if not item:
+        raise HTTPException(status_code=404, detail="Itinerary item not found")
+
+    return item
 
 # get idea items
 
@@ -214,6 +288,29 @@ def get_trip_ideas(trip_id: int):
 
     return ideas
 
+# get one idea item
+
+@app.get("/ideas/{idea_id}")
+def get_idea(idea_id: int):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM trip_idea_items
+        WHERE id = %s;
+    """, (idea_id,))
+
+    idea = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    if not idea:
+        raise HTTPException(status_code=404, detail="Idea not found")
+
+    return idea
+
 #Get destinations
 
 @app.get("/trips/{trip_id}/destinations")
@@ -235,6 +332,29 @@ def get_trip_destinations(trip_id: int):
 
     return destinations
 
+# get one destination
+
+@app.get("/destinations/{destination_id}")
+def get_destination(destination_id: int):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM trip_destinations
+        WHERE id = %s;
+    """, (destination_id,))
+
+    destination = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    if not destination:
+        raise HTTPException(status_code=404, detail="Destination not found")
+
+    return destination
+
 # Get Checklist
 
 @app.get("/trips/{trip_id}/checklist")
@@ -255,6 +375,29 @@ def get_trip_checklist(trip_id: int):
     conn.close()
 
     return checklist
+
+#get one checklist item
+
+@app.get("/checklist-items/{item_id}")
+def get_checklist_item(item_id: int):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM trip_checklist_items
+        WHERE id = %s;
+    """, (item_id,))
+
+    item = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    if not item:
+        raise HTTPException(status_code=404, detail="Checklist item not found")
+
+    return item
 
 #Posts
 
