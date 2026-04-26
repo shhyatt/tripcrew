@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from database import get_connection
 from pydantic import BaseModel
 from typing import Optional
+from collections import defaultdict
 
 app = FastAPI()
 
@@ -290,6 +291,25 @@ def get_checklist_item(item_id: int):
 
 #get itinerarys
 
+# @app.get("/trips/{trip_id}/itinerary")
+# def get_trip_itinerary(trip_id: int):
+#     conn = get_connection()
+#     cur = conn.cursor()
+
+#     cur.execute("""
+#         SELECT *
+#         FROM itinerary_items
+#         WHERE trip_id = %s
+#         ORDER BY date, start_time;
+#     """, (trip_id,))
+
+#     itinerary = cur.fetchall()
+
+#     cur.close()
+#     conn.close()
+
+#     return itinerary
+
 @app.get("/trips/{trip_id}/itinerary")
 def get_trip_itinerary(trip_id: int):
     conn = get_connection()
@@ -302,12 +322,20 @@ def get_trip_itinerary(trip_id: int):
         ORDER BY date, start_time;
     """, (trip_id,))
 
-    itinerary = cur.fetchall()
+    itinerary_items = cur.fetchall()
 
     cur.close()
     conn.close()
 
-    return itinerary
+    # Group by date
+    itinerary_by_day = defaultdict(list)
+
+    for item in itinerary_items:
+        date = item["date"]
+        itinerary_by_day[date].append(item)
+
+    return itinerary_by_day
+
 
 # Get one itinerary item 
 
