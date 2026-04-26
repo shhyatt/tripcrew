@@ -638,4 +638,304 @@ def add_trip_member(member: TripMemberCreate):
 
     return new_member
 
+# Updates
+
+#update idea
+
+@app.put("/ideas/{idea_id}")
+def update_idea(idea_id: int, idea: TripIdeaCreate):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        UPDATE trip_idea_items
+        SET title = %s,
+            description = %s,
+            category = %s,
+            location_name = %s,
+            proposed_date = %s,
+            must_do = %s,
+            created_by_user_id = %s
+        WHERE id = %s
+        RETURNING *;
+    """, (
+        idea.title,
+        idea.description,
+        idea.category,
+        idea.location_name,
+        idea.proposed_date,
+        idea.must_do,
+        idea.created_by_user_id,
+        idea_id
+    ))
+
+    updated_idea = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    if not updated_idea:
+        raise HTTPException(status_code=404, detail="Idea not found")
+
+    return updated_idea
+
+#update checklist item
+
+@app.put("/checklist-items/{item_id}")
+def update_checklist_item(item_id: int, item: ChecklistItemCreate):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        UPDATE trip_checklist_items
+        SET title = %s,
+            is_completed = %s
+        WHERE id = %s
+        RETURNING *;
+    """, (
+        item.title,
+        item.is_completed,
+        item_id
+    ))
+
+    updated_item = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    if not updated_item:
+        raise HTTPException(status_code=404, detail="Checklist item not found")
+
+    return updated_item
+
+#update itinerary item
+
+@app.put("/itinerary-items/{item_id}")
+def update_itinerary_item(item_id: int, item: ItineraryItemCreate):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        UPDATE itinerary_items
+        SET trip_id = %s,
+            trip_destination_id = %s,
+            title = %s,
+            description = %s,
+            category = %s,
+            location_name = %s,
+            date = %s,
+            start_time = %s,
+            end_time = %s,
+            created_by_user_id = %s
+        WHERE id = %s
+        RETURNING *;
+    """, (
+        item.trip_id,
+        item.trip_destination_id,
+        item.title,
+        item.description,
+        item.category,
+        item.location_name,
+        item.date,
+        item.start_time,
+        item.end_time,
+        item.created_by_user_id,
+        item_id
+    ))
+
+    updated_item = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    if not updated_item:
+        raise HTTPException(status_code=404, detail="Itinerary item not found")
+
+    return updated_item
+
+#update destination
+
+@app.put("/destinations/{destination_id}")
+def update_destination(destination_id: int, destination: DestinationCreate):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        UPDATE trip_destinations
+        SET trip_id = %s,
+            location_name = %s,
+            start_date = %s,
+            end_date = %s,
+            order_index = %s
+        WHERE id = %s
+        RETURNING *;
+    """, (
+        destination.trip_id,
+        destination.location_name,
+        destination.start_date,
+        destination.end_date,
+        destination.order_index,
+        destination_id
+    ))
+
+    updated_destination = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    if not updated_destination:
+        raise HTTPException(status_code=404, detail="Destination not found")
+
+    return updated_destination
+
+# update trip member
+
+@app.put("/trip-members/{member_id}")
+def update_trip_member(member_id: int, member: TripMemberCreate):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        UPDATE trip_members
+        SET trip_id = %s,
+            user_id = %s,
+            role = %s
+        WHERE id = %s
+        RETURNING *;
+    """, (
+        member.trip_id,
+        member.user_id,
+        member.role,
+        member_id
+    ))
+
+    updated_member = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    if not updated_member:
+        raise HTTPException(status_code=404, detail="Trip member not found")
+
+    return updated_member
+
+#deletes
+
+#delete idea 
+
+@app.delete("/ideas/{idea_id}")
+def delete_idea(idea_id: int):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        DELETE FROM trip_idea_items
+        WHERE id = %s
+        RETURNING *;
+    """, (idea_id,))
+
+    deleted_idea = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    if not deleted_idea:
+        raise HTTPException(status_code=404, detail="Idea not found")
+
+    return {"message": "Idea deleted", "deleted_idea": deleted_idea}
+
+#delete checklist item 
+
+@app.delete("/checklist-items/{item_id}")
+def delete_checklist_item(item_id: int):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        DELETE FROM trip_checklist_items
+        WHERE id = %s
+        RETURNING *;
+    """, (item_id,))
+
+    deleted_item = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    if not deleted_item:
+        raise HTTPException(status_code=404, detail="Checklist item not found")
+
+    return {"message": "Checklist item deleted", "deleted_item": deleted_item}
+
+# delete itinerary item
+
+@app.delete("/itinerary-items/{item_id}")
+def delete_itinerary_item(item_id: int):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        DELETE FROM itinerary_items
+        WHERE id = %s
+        RETURNING *;
+    """, (item_id,))
+
+    deleted_item = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    if not deleted_item:
+        raise HTTPException(status_code=404, detail="Itinerary item not found")
+
+    return {"message": "Itinerary item deleted", "deleted_item": deleted_item}
+
+#delete destinations
+
+@app.delete("/destinations/{destination_id}")
+def delete_destination(destination_id: int):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        DELETE FROM trip_destinations
+        WHERE id = %s
+        RETURNING *;
+    """, (destination_id,))
+
+    deleted_destination = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    if not deleted_destination:
+        raise HTTPException(status_code=404, detail="Destination not found")
+
+    return {"message": "Destination deleted", "deleted_destination": deleted_destination}
+
+#delete trip member
+
+@app.delete("/trip-members/{member_id}")
+def delete_trip_member(member_id: int):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        DELETE FROM trip_members
+        WHERE id = %s
+        RETURNING *;
+    """, (member_id,))
+
+    deleted_member = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    if not deleted_member:
+        raise HTTPException(status_code=404, detail="Trip member not found")
+
+    return {"message": "Trip member deleted", "deleted_member": deleted_member}
+
+
+
 
