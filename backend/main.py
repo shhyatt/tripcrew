@@ -188,7 +188,12 @@ def get_trip_details(trip_id: int):
 
     # 2. Members
     cur.execute("""
-        SELECT u.*
+        SELECT 
+        u.id,
+        u.first_name,
+        u.last_name,
+        u.email,
+        u.created_at
         FROM trip_members tm
         JOIN users u ON tm.user_id = u.id
         WHERE tm.trip_id = %s;
