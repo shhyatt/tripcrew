@@ -1,11 +1,24 @@
 import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 function TripDetail() {
   const { tripId } = useParams();
+  const [trip, setTrip] = useState(null);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL}/trips/${tripId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("DATA:", data);
+        setTrip(data)
+      });
+  }, [tripId]);
+
+  if (!trip) return <p>Loading trip...</p>;
 
   return (
     <div>
-      <h1>Trip {tripId}</h1>
+      <h1>{trip.trip.trip_name}</h1>
 
       {/* Destinations */}
       <section>

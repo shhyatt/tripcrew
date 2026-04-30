@@ -6,10 +6,16 @@ function Dashboard() {
   const [trips, setTrips] = useState([]);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/trips`)
-      .then((response) => response.json())
-      .then((data) => setTrips(data));
-  }, []);
+  fetch(`${import.meta.env.VITE_API_URL}/trips`)
+    .then((response) => {
+      console.log("RAW RESPONSE:", response);
+      return response.json();
+    })
+    .then((data) => {
+      console.log("DATA:", data);
+      setTrips(data);
+    });
+}, []);
 
   return (
     <div>

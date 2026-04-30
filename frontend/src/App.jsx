@@ -11,6 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/trips/:tripId" element={<TripDetail />} />
+        <Route path="/trips" element={<TripDetail />} />
         <Route path="/trips/new" element={<CreateTrip />} />
       </Routes>
     </BrowserRouter>

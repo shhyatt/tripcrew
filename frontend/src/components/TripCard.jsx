@@ -14,9 +14,10 @@ function TripCard({ trip }) {
         cursor: "pointer"
       }}
     >
-      <h2>{trip.name}</h2>
-      <p>{trip.location}</p>
-      <p>{trip.startDate} - {trip.endDate}</p>
+      <h2>{trip.trip_name}</h2>
+      <p>{trip.description}</p>
+      <p>{trip.start_date} - {trip.end_date}</p>
+      <p>Owner: {trip.owner_name}</p>
     </div>
   );
 }

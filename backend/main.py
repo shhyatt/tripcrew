@@ -3,8 +3,17 @@ from database import get_connection
 from pydantic import BaseModel
 from typing import Optional
 from collections import defaultdict
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class UserCreate(BaseModel):
     first_name: str
