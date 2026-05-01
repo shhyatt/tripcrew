@@ -182,3 +182,13 @@
     border-right-color: var(--border);
   }
 }
+
+button {
+  background-color: #2CB07B;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}

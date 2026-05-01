@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import TripCard from "../components/TripCard";
 
 
 function Dashboard() {
   const [trips, setTrips] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
   fetch(`${import.meta.env.VITE_API_URL}/trips`)
@@ -20,6 +22,9 @@ function Dashboard() {
   return (
     <div>
       <h1>Upcoming Trips</h1>
+      <button onClick={() => navigate("/trips/new")}>
+         + Create Trip
+      </button>
 
       {trips.map((trip) => (
         <TripCard key={trip.id} trip={trip} />
