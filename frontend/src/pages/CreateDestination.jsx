@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function CreateTrip() {
-  const [form, setForm] = useState({
-    trip_name: "",
-    description: "",
+function CreateDestination() {
+    const { tripId } = useParams();
+    const [form, setForm] = useState({
+    location_name: "",
     start_date: "",
     end_date: ""
   });
@@ -20,14 +21,14 @@ function CreateTrip() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch(`${API_URL}/trips`, {
+    const res = await fetch(`${API_URL}/trips/${tripId}/destinations`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
         ...form,
-        owner_user_id: 1 // temp hardcode for MVP
+        trip_id: tripId,
       })
     });
 
@@ -35,19 +36,18 @@ function CreateTrip() {
     console.log(data);
 
     // redirect after create
-    window.location.href = "/";
+    window.location.href = `/trips/${tripId}`;
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <input name="trip_name" placeholder="Trip Name" onChange={handleChange} />
-      <input name="description" placeholder="Description" onChange={handleChange} />
+      <input name="location_name" placeholder="Destination Name" onChange={handleChange} />
       <input type="date" name="start_date" onChange={handleChange} />
       <input type="date" name="end_date" onChange={handleChange} />
 
-      <button type="submit">Create Trip</button>
+      <button type="submit">Add Destination</button>
     </form>
   );
 }
 
-export default CreateTrip;
+export default CreateDestination;

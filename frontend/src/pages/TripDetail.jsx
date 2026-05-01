@@ -1,9 +1,11 @@
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 function TripDetail() {
   const { tripId } = useParams();
   const [trip, setTrip] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/trips/${tripId}`)
@@ -23,7 +25,8 @@ function TripDetail() {
       {/* Destinations */}
       <section>
         <h2>Destinations</h2>
-        <button>Add Destination</button>
+         <button onClick={() => navigate(`/trips/${trip.trip.id}/new_destination`)}>
+          Add Destination</button>
       </section>
 
       {/* Itinerary */}
